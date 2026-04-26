@@ -130,6 +130,34 @@ svg {
   gap: 10px;
 }
 
+.developer-credit {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(12, 124, 122, 0.2);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(12, 124, 122, 0.1), rgba(213, 168, 79, 0.12)),
+    rgba(255,255,255,0.72);
+  box-shadow: 0 10px 26px rgba(23, 33, 38, 0.08);
+  backdrop-filter: blur(16px);
+}
+
+.developer-credit span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.developer-credit strong {
+  color: var(--teal-dark);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
 .nav-actions a,
 .ghost-button,
 .live-pill {
@@ -692,6 +720,13 @@ textarea:focus,
 
   .nav-actions {
     justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .developer-credit {
+    justify-content: center;
+    width: 100%;
+    order: 3;
   }
 
   .hero-copy {
