@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DocuMind AI</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient-grid" aria-hidden="true"></div>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/ui/" aria-label="DocuMind AI home">
+          <span class="brand-mark">
+            <svg viewBox="0 0 28 28" aria-hidden="true">
+              <path d="M6 4h10l6 6v14H6z" />
+              <path d="M16 4v7h6" />
+              <path d="M10 15h8M10 19h5" />
+            </svg>
+          </span>
+          <span>
+            <strong>DocuMind AI</strong>
+            <small>Private document intelligence</small>
+          </span>
+        </a>
+
+        <nav class="nav-actions" aria-label="Application links">
+          <a href="/docs" title="Open API documentation">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 4h10l4 4v12H5z" />
+              <path d="M15 4v5h4M8 13h8M8 17h5" />
+            </svg>
+            API
+          </a>
+          <span class="live-pill">
+            <span></span>
+            Live
+          </span>
+        </nav>
+      </header>
+
+      <section class="hero-band">
+        <div class="hero-copy">
+          <p class="eyebrow">RAG workspace</p>
+          <h1>Ask company documents like a senior analyst.</h1>
+          <p>
+            Upload a PDF, index it into ChromaDB, and get answers grounded in
+            source chunks from your own files.
+          </p>
+        </div>
+
+        <section class="insight-stage" aria-label="Document intelligence visualization">
+          <canvas id="vectorCanvas" width="680" height="300"></canvas>
+          <div class="floating-document doc-a">
+            <span></span>
+            <strong>Policy.pdf</strong>
+            <small>1,024 token chunks</small>
+          </div>
+          <div class="floating-document doc-b">
+            <span></span>
+            <strong>Resume.pdf</strong>
+            <small>8 indexed chunks</small>
+          </div>
+          <div class="vector-badge">
+            <strong>ChromaDB</strong>
+            <small>semantic retrieval ready</small>
+          </div>
+        </section>
+      </section>
+
+      <section class="workspace" aria-label="DocuMind AI workspace">
+        <aside class="side-panel">
+          <section class="upload-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="section-kicker">Source library</p>
+                <h2>Upload documents</h2>
+              </div>
+              <span id="uploadStatus" class="status">
+                <span></span>
+                Ready
+              </span>
+            </div>
+
+            <form id="uploadForm" class="upload-box">
+              <input id="fileInput" type="file" accept="application/pdf" hidden />
+              <button id="chooseFileButton" class="file-picker" type="button">
+                <span class="file-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 3h9l5 5v13H6z" />
+                    <path d="M15 3v6h5M9 14h6M9 18h4" />
+                  </svg>
+                </span>
+                <span>
+                  <strong id="fileName">Choose a PDF</strong>
+                  <small id="fileHint">Drop a company PDF here or browse</small>
+                </span>
+              </button>
+              <button id="uploadButton" class="primary-button" type="submit" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 16V4M7 9l5-5 5 5M5 20h14" />
+                </svg>
+                Upload and Index
+              </button>
+            </form>
+          </section>
+
+          <section class="library-panel">
+            <div class="library-item">
+              <span class="mini-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 5h16v14H4zM8 9h8M8 13h5" />
+                </svg>
+              </span>
+              <div>
+                <h3 id="indexedFile">No document indexed in this session.</h3>
+                <p id="chunkCount">Upload a PDF to create searchable chunks.</p>
+              </div>
+            </div>
+
+            <div class="metric-grid">
+              <div>
+                <strong id="sourceCount">0</strong>
+                <span>sources</span>
+              </div>
+              <div>
+                <strong id="queryCount">0</strong>
+                <span>queries</span>
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <section class="chat-panel">
+          <div class="chat-header">
+            <div>
+              <p class="section-kicker">Grounded chat</p>
+              <h2>Ask DocuMind</h2>
+            </div>
+            <button id="clearButton" class="ghost-button" type="button" title="Clear conversation">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3" />
+              </svg>
+            </button>
+          </div>
+
+          <div id="messages" class="messages" aria-live="polite">
+            <div class="empty-state">
+              <span class="empty-icon">
+                <svg viewBox="0 0 40 40" aria-hidden="true">
+                  <path d="M7 8h15l7 7v17H7z" />
+                  <path d="M22 8v8h7M12 22h12M12 27h8" />
+                </svg>
+              </span>
+              <h2>Your document answers will appear here.</h2>
+              <p>Try asking: "What is this document about?"</p>
+            </div>
+          </div>
+
+          <form id="chatForm" class="composer">
+            <textarea
+              id="questionInput"
+              rows="2"
+              placeholder="Ask a question about the uploaded PDF..."
+              required
+            ></textarea>
+            <button id="askButton" class="send-button" type="submit" title="Ask question">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </button>
+          </form>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

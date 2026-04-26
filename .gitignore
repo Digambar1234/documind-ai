@@ -1,0 +1,10 @@
+backend/venv/
+backend/uploads/*
+backend/chroma_db/*
+backend/documind.db
+__pycache__/
+*.py[cod]
+.env
+
+!backend/uploads/.gitkeep
+!backend/chroma_db/.gitkeep
