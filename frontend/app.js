@@ -1,4 +1,7 @@
-const API_BASE = "";
+const API_BASE =
+  window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? ""
+    : "https://documind-ai-sxog.onrender.com";
 
 const uploadForm = document.querySelector("#uploadForm");
 const fileInput = document.querySelector("#fileInput");
