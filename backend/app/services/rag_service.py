@@ -55,19 +55,43 @@ Answer:
 
     response = llm.invoke(prompt)
 
-    sources = [
-        {
-            "file_name": doc.metadata.get("file_name", "Unknown"),
-            "page": _page_number(doc.metadata.get("page")),
-            "chunk": doc.page_content,
-        }
-        for doc in relevant_docs
-    ]
+    sources = _format_sources(relevant_docs)
 
     return {
         "answer": response.content,
         "sources": sources,
     }
+
+
+def _format_sources(documents):
+    sources = []
+    seen = set()
+
+    for doc in documents:
+        file_name = doc.metadata.get("file_name", "Unknown")
+        page = _page_number(doc.metadata.get("page"))
+        preview = " ".join((doc.page_content or "").split())
+        key = (file_name, page, preview[:180])
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+        sources.append(
+            {
+                "file_name": file_name,
+                "page": page,
+                "content_preview": _truncate(preview, 260),
+            }
+        )
+
+    return sources
+
+
+def _truncate(text: str, max_length: int) -> str:
+    if len(text) <= max_length:
+        return text
+    return f"{text[:max_length].rstrip()}..."
 
 
 def _page_number(raw_page):

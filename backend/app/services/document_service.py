@@ -8,7 +8,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from app.config import GEMINI_CHAT_MODEL, GOOGLE_API_KEY
-from app.services.vector_service import add_documents_to_vector_db
+from app.services.vector_service import add_documents_to_vector_db, reset_vector_db
 
 
 def process_pdf_document(file_path: str, file_name: str):
@@ -37,6 +37,7 @@ def process_pdf_document(file_path: str, file_name: str):
             ),
         )
 
+    reset_vector_db()
     add_documents_to_vector_db(chunks)
 
     return {

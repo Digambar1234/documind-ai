@@ -32,6 +32,15 @@ def add_documents_to_vector_db(documents):
     return True
 
 
+def reset_vector_db():
+    vector_db = get_vector_db()
+    try:
+        vector_db.delete_collection()
+    except Exception:
+        return False
+    return True
+
+
 def search_similar_documents(query: str, k: int = 4):
     vector_db = get_vector_db()
     return vector_db.similarity_search(query, k=k)

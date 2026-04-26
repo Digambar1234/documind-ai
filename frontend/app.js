@@ -76,10 +76,6 @@ uploadForm.addEventListener("submit", async (event) => {
     indexedFile.textContent = data.file_name;
     chunkCount.textContent = `${data.chunks_created} chunks indexed via ${formatExtractionMethod(data.extraction_method)}`;
     setStatus("Indexed", "success");
-    addAssistantMessage(
-      `${data.file_name} is indexed with ${data.chunks_created} chunks. Ask a question when you are ready.`,
-      []
-    );
   } catch (error) {
     setStatus("Failed", "error");
     addAssistantMessage(error.message, []);
@@ -144,8 +140,14 @@ function addAssistantMessage(text, sources) {
   const node = addMessage("DocuMind", text, "assistant");
 
   if (sources.length > 0) {
+    const sourceToggle = document.createElement("button");
+    sourceToggle.className = "source-toggle";
+    sourceToggle.type = "button";
+    sourceToggle.textContent = `Show ${sources.length} source${sources.length === 1 ? "" : "s"}`;
+
     const sourceList = document.createElement("div");
     sourceList.className = "sources";
+    sourceList.hidden = true;
 
     sources.forEach((source, index) => {
       const item = document.createElement("article");
@@ -156,7 +158,7 @@ function addAssistantMessage(text, sources) {
       header.innerHTML = `<span>${escapeHtml(source.file_name || "Unknown")}</span><span>Page ${escapeHtml(String(source.page ?? "N/A"))}</span>`;
 
       const chunk = document.createElement("pre");
-      chunk.textContent = source.chunk || source.content_preview || "";
+      chunk.textContent = source.content_preview || "";
 
       item.append(header, chunk);
       sourceList.append(item);
@@ -166,7 +168,14 @@ function addAssistantMessage(text, sources) {
       }
     });
 
-    node.append(sourceList);
+    sourceToggle.addEventListener("click", () => {
+      sourceList.hidden = !sourceList.hidden;
+      sourceToggle.textContent = sourceList.hidden
+        ? `Show ${sources.length} source${sources.length === 1 ? "" : "s"}`
+        : "Hide sources";
+    });
+
+    node.append(sourceToggle, sourceList);
   }
 
   messages.scrollTop = messages.scrollHeight;
