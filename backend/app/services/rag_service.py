@@ -53,14 +53,58 @@ Answer:
         temperature=0.2,
     )
 
-    response = llm.invoke(prompt)
-
     sources = _format_sources(relevant_docs)
+
+    try:
+        response = llm.invoke(prompt)
+    except Exception as exc:
+        if _is_quota_error(exc):
+            return {
+                "answer": _quota_fallback_answer(relevant_docs),
+                "sources": sources,
+            }
+        raise
 
     return {
         "answer": response.content,
         "sources": sources,
     }
+
+
+def _is_quota_error(exc: Exception) -> bool:
+    message = str(exc).lower()
+    return (
+        "429" in message
+        or "resource_exhausted" in message
+        or "quota" in message
+        or "rate limit" in message
+    )
+
+
+def _quota_fallback_answer(documents) -> str:
+    snippets = []
+
+    for doc in documents[:3]:
+        file_name = doc.metadata.get("file_name", "the uploaded document")
+        page = _page_number(doc.metadata.get("page"))
+        text = " ".join((doc.page_content or "").split())
+        if not text:
+            continue
+
+        snippets.append(f"- {file_name}, page {page}: {_truncate(text, 360)}")
+
+    if not snippets:
+        return (
+            "Gemini is temporarily rate-limited, and I could not extract a fallback "
+            "answer from the uploaded document. Please try again in about a minute."
+        )
+
+    return (
+        "Gemini is temporarily rate-limited, so I cannot generate a polished answer "
+        "right now. Here are the most relevant parts I found in the uploaded document:\n\n"
+        + "\n".join(snippets)
+        + "\n\nPlease try again in about a minute for a full AI-written answer."
+    )
 
 
 def _format_sources(documents):

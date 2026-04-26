@@ -16,7 +16,25 @@ def ask_question(request: ChatRequest):
     except HTTPException:
         raise
     except Exception as exc:
+        if _is_quota_error(exc):
+            raise HTTPException(
+                status_code=429,
+                detail=(
+                    "Gemini is temporarily rate-limited. Please try again in about a minute."
+                ),
+            ) from exc
+
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to generate answer: {exc}",
+            detail="Failed to generate answer. Please try again.",
         ) from exc
+
+
+def _is_quota_error(exc: Exception) -> bool:
+    message = str(exc).lower()
+    return (
+        "429" in message
+        or "resource_exhausted" in message
+        or "quota" in message
+        or "rate limit" in message
+    )
